@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 
 import MoviesList from './components/MoviesList';
 import './App.css';
@@ -8,7 +8,7 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const fetchMoviesHandler =()=>{
+  const fetchMoviesHandler = useCallback(()=>{
     setIsLoading(true);
     fetch('https://swapi.dev/api/films')
     .then(response => {
@@ -32,7 +32,13 @@ function App() {
       setIsLoading(false);
       setError(error.message)
     } )
-  }
+  }, [])
+
+  useEffect(() => {
+    fetchMoviesHandler();
+  }, [fetchMoviesHandler]) //added as a dependency in case function changes if it uses an external state
+
+
   let content = <p>No Movies Here</p>;
   if(!isLoading && movies.length > 0){
     content = <MoviesList movies={movies} />
